@@ -3,27 +3,27 @@ using System.Windows;
 
 namespace jwldnr.VisualLinter.Views
 {
-    internal class GeneralOptions : UIElementDialogPage
+    internal class GeneralOptionsPage : UIElementDialogPage
     {
         internal const string PageName = "General";
 
-        private GeneralOptionsControl _generalOptionsControl;
+        private GeneralOptionsPageControl _generalOptionsPageControl;
 
-        protected override UIElement Child => _generalOptionsControl ??
-            (_generalOptionsControl = new GeneralOptionsControl());
+        protected override UIElement Child => _generalOptionsPageControl ??
+            (_generalOptionsPageControl = new GeneralOptionsPageControl());
 
         public override void LoadSettingsFromStorage()
         {
             base.LoadSettingsFromStorage();
 
-            _generalOptionsControl.ViewModel.Load();
+            _generalOptionsPageControl.ViewModel.Load();
         }
 
         public override void SaveSettingsToStorage()
         {
             base.SaveSettingsToStorage();
 
-            _generalOptionsControl.ViewModel.Save();
+            _generalOptionsPageControl.ViewModel.Save();
         }
     }
 }

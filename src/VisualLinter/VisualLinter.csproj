@@ -79,17 +79,17 @@
     <Compile Include="ViewModels\AdvancedOptionsViewModel.cs" />
     <Compile Include="ViewModels\GeneralOptionsViewModel.cs" />
     <Compile Include="ViewModels\OptionsViewModelBase.cs" />
-    <Compile Include="Views\AdvancedOptions.cs">
+    <Compile Include="Views\AdvancedOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Views\AdvancedOptionsControl.xaml.cs">
-      <DependentUpon>AdvancedOptionsControl.xaml</DependentUpon>
+    <Compile Include="Views\AdvancedOptionsPageControl.xaml.cs">
+      <DependentUpon>AdvancedOptionsPageControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\GeneralOptions.cs">
+    <Compile Include="Views\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Views\GeneralOptionsControl.xaml.cs">
-      <DependentUpon>GeneralOptionsControl.xaml</DependentUpon>
+    <Compile Include="Views\GeneralOptionsPageControl.xaml.cs">
+      <DependentUpon>GeneralOptionsPageControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="VisualLinter.cs">
       <AutoGen>True</AutoGen>
@@ -256,11 +256,11 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Page Include="Views\AdvancedOptionsControl.xaml">
+    <Page Include="Views\AdvancedOptionsPageControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\GeneralOptionsControl.xaml">
+    <Page Include="Views\GeneralOptionsPageControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

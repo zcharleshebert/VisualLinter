@@ -3,16 +3,16 @@
 namespace jwldnr.VisualLinter.Views
 {
     /// <summary>
-    /// Interaction logic for AdvancedOptionsControl.xaml
+    /// Interaction logic for AdvancedOptionsPageControl.xaml
     /// </summary>
-    public partial class AdvancedOptionsControl
+    public partial class AdvancedOptionsPageControl
     {
         internal AdvancedOptionsViewModel ViewModel = _viewModel ??
             (_viewModel = new AdvancedOptionsViewModel());
 
         private static AdvancedOptionsViewModel _viewModel;
 
-        public AdvancedOptionsControl()
+        public AdvancedOptionsPageControl()
         {
             InitializeComponent();
 
