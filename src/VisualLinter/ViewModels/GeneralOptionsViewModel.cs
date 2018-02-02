@@ -1,4 +1,5 @@
 ﻿using jwldnr.VisualLinter.Helpers;
+using Microsoft.VisualStudio.Shell;
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -6,57 +7,58 @@ using System.Windows.Input;
 
 namespace jwldnr.VisualLinter.ViewModels
 {
-    internal class GeneralOptionsDialogViewModel : ViewModelBase
+    internal sealed class GeneralOptionsViewModel : OptionsViewModelBase
     {
         internal static readonly DependencyProperty DisableEslintIgnoreProperty =
             DependencyProperty.Register(
                 nameof(DisableEslintIgnore),
                 typeof(bool),
-                typeof(GeneralOptionsDialogViewModel),
+                typeof(GeneralOptionsViewModel),
                 new PropertyMetadata(false));
 
         internal static readonly DependencyProperty EnableHtmlLanguageSupportProperty =
             DependencyProperty.Register(
                 nameof(EnableHtmlLanguageSupport),
                 typeof(bool),
-                typeof(GeneralOptionsDialogViewModel),
+                typeof(GeneralOptionsViewModel),
                 new PropertyMetadata(false));
 
         internal static readonly DependencyProperty EnableJavaScriptLanguageSupportProperty =
             DependencyProperty.Register(
                 nameof(EnableJavaScriptLanguageSupport),
                 typeof(bool),
-                typeof(GeneralOptionsDialogViewModel),
+                typeof(GeneralOptionsViewModel),
                 new PropertyMetadata(true));
 
         internal static readonly DependencyProperty EnableReactLanguageSupportProperty =
             DependencyProperty.Register(
                 nameof(EnableReactLanguageSupport),
                 typeof(bool),
-                typeof(GeneralOptionsDialogViewModel),
+                typeof(GeneralOptionsViewModel),
                 new PropertyMetadata(false));
 
         internal static readonly DependencyProperty EnableVueLanguageSupportProperty =
             DependencyProperty.Register(
                 nameof(EnableVueLanguageSupport),
                 typeof(bool),
-                typeof(GeneralOptionsDialogViewModel),
+                typeof(GeneralOptionsViewModel),
                 new PropertyMetadata(false));
 
         internal static readonly DependencyProperty UseGlobalEslintProperty =
             DependencyProperty.Register(
                 nameof(UseGlobalEslint),
                 typeof(bool),
-                typeof(GeneralOptionsDialogViewModel),
+                typeof(GeneralOptionsViewModel),
                 new PropertyMetadata(false));
 
         internal static readonly DependencyProperty UsePersonalConfigProperty =
             DependencyProperty.Register(
                 nameof(UsePersonalConfig),
                 typeof(bool),
-                typeof(GeneralOptionsDialogViewModel),
+                typeof(GeneralOptionsViewModel),
                 new PropertyMetadata(false));
 
+        private readonly IVisualLinterOptions _options;
         private ICommand _suggestNewFeaturesCommand;
 
         public ICommand SuggestNewFeaturesCommand
@@ -108,26 +110,32 @@ namespace jwldnr.VisualLinter.ViewModels
             set => SetPropertyValue(UsePersonalConfigProperty, value);
         }
 
+        internal GeneralOptionsViewModel()
+        {
+            _options = ServiceProvider.GlobalProvider.GetMefService<IVisualLinterOptions>() ??
+                throw new Exception("exception: unable to retrieve options");
+        }
+
         internal void Load()
         {
-            UseGlobalEslint = Options.UseGlobalEslint;
-            EnableHtmlLanguageSupport = Options.EnableHtmlLanguageSupport;
-            EnableJavaScriptLanguageSupport = Options.EnableJavaScriptLanguageSupport;
-            EnableReactLanguageSupport = Options.EnableReactLanguageSupport;
-            EnableVueLanguageSupport = Options.EnableVueLanguageSupport;
-            UsePersonalConfig = Options.UsePersonalConfig;
-            DisableEslintIgnore = Options.DisableIgnorePath;
+            UseGlobalEslint = _options.UseGlobalEslint;
+            EnableHtmlLanguageSupport = _options.EnableHtmlLanguageSupport;
+            EnableJavaScriptLanguageSupport = _options.EnableJavaScriptLanguageSupport;
+            EnableReactLanguageSupport = _options.EnableReactLanguageSupport;
+            EnableVueLanguageSupport = _options.EnableVueLanguageSupport;
+            UsePersonalConfig = _options.UsePersonalConfig;
+            DisableEslintIgnore = _options.DisableIgnorePath;
         }
 
         internal void Save()
         {
-            Options.DisableIgnorePath = DisableEslintIgnore;
-            Options.EnableHtmlLanguageSupport = EnableHtmlLanguageSupport;
-            Options.EnableJavaScriptLanguageSupport = EnableJavaScriptLanguageSupport;
-            Options.EnableReactLanguageSupport = EnableReactLanguageSupport;
-            Options.EnableVueLanguageSupport = EnableVueLanguageSupport;
-            Options.UseGlobalEslint = UseGlobalEslint;
-            Options.UsePersonalConfig = UsePersonalConfig;
+            _options.DisableIgnorePath = DisableEslintIgnore;
+            _options.EnableHtmlLanguageSupport = EnableHtmlLanguageSupport;
+            _options.EnableJavaScriptLanguageSupport = EnableJavaScriptLanguageSupport;
+            _options.EnableReactLanguageSupport = EnableReactLanguageSupport;
+            _options.EnableVueLanguageSupport = EnableVueLanguageSupport;
+            _options.UseGlobalEslint = UseGlobalEslint;
+            _options.UsePersonalConfig = UsePersonalConfig;
         }
 
         private static void SuggestNewFeatures(object url)

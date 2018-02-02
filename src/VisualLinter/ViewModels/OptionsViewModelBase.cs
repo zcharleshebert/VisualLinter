@@ -1,7 +1,4 @@
-﻿using jwldnr.VisualLinter.Helpers;
-using Microsoft.VisualStudio.Shell;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -9,16 +6,8 @@ using System.Windows.Controls;
 
 namespace jwldnr.VisualLinter.ViewModels
 {
-    internal abstract class ViewModelBase : UserControl, INotifyPropertyChanged
+    internal abstract class OptionsViewModelBase : UserControl, INotifyPropertyChanged
     {
-        protected readonly IVisualLinterOptions Options;
-
-        protected ViewModelBase()
-        {
-            Options = ServiceProvider.GlobalProvider.GetMefService<IVisualLinterOptions>() ??
-                throw new Exception("exception: unable to retrieve options");
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected T GetPropertyValue<T>(DependencyProperty property)
