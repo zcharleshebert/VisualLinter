@@ -1,4 +1,5 @@
 ﻿using jwldnr.VisualLinter.Helpers;
+using jwldnr.VisualLinter.Linting;
 using jwldnr.VisualLinter.Tagging;
 using Newtonsoft.Json;
 using System;
@@ -11,16 +12,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace jwldnr.VisualLinter.Linting
+namespace jwldnr.VisualLinter.Services
 {
-    public interface ILinter
+    public interface ILinterService
     {
         Task LintAsync(ILinterProvider provider, string filePath, CancellationToken token);
     }
 
-    [Export(typeof(ILinter))]
+    [Export(typeof(ILinterService))]
     [PartCreationPolicy(CreationPolicy.Shared)]
-    internal class Linter : ILinter
+    internal class LinterService : ILinterService
     {
         private readonly SemaphoreSlim _mutex = new SemaphoreSlim(1, 1);
 
@@ -46,7 +47,7 @@ namespace jwldnr.VisualLinter.Linting
                     token.ThrowIfCancellationRequested();
 
                     if (string.IsNullOrEmpty(output))
-                        throw new Exception("exception: linter returned empty result");
+                        throw new Exception("exception: linterService returned empty result");
 
                     var results = DeserializeOutput(output);
                     var messages = ProcessResults(results);

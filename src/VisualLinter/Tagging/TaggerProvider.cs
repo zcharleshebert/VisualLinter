@@ -1,5 +1,6 @@
 ﻿using jwldnr.VisualLinter.Helpers;
 using jwldnr.VisualLinter.Linting;
+using jwldnr.VisualLinter.Services;
 using Microsoft.VisualStudio.Shell.TableControl;
 using Microsoft.VisualStudio.Shell.TableManager;
 using Microsoft.VisualStudio.Text;
@@ -27,7 +28,7 @@ namespace jwldnr.VisualLinter.Tagging
     [TextViewRole(PredefinedTextViewRoles.Analyzable)]
     public sealed class TaggerProvider : IViewTaggerProvider, ITableDataSource, ILinterProvider, IDisposable
     {
-        private readonly ILinter _linter;
+        private readonly ILinterService _linterService;
         private readonly List<SinkManager> _managers = new List<SinkManager>();
         private readonly Dictionary<string, Func<bool>> _optionsMap = new Dictionary<string, Func<bool>>(StringComparer.OrdinalIgnoreCase);
         private readonly TaggerManager _taggers = new TaggerManager();
@@ -44,14 +45,14 @@ namespace jwldnr.VisualLinter.Tagging
             [Import] ITableManagerProvider tableManagerProvider,
             [Import] ITextDocumentFactoryService textDocumentFactoryService,
             [Import] IVisualLinterOptions options,
-            [Import] ILinter linter)
+            [Import] ILinterService linterService)
         {
             _tableManager = tableManagerProvider
                 .GetTableManager(StandardTables.ErrorsTable);
 
             _textDocumentFactoryService = textDocumentFactoryService;
 
-            _linter = linter;
+            _linterService = linterService;
 
             _optionsMap.Add(".html", () => options.EnableHtmlLanguageSupport);
             _optionsMap.Add(".js", () => options.EnableJavaScriptLanguageSupport);
@@ -171,7 +172,7 @@ namespace jwldnr.VisualLinter.Tagging
                     return;
             }
 
-            await _linter.LintAsync(this, filePath, token)
+            await _linterService.LintAsync(this, filePath, token)
                 .ConfigureAwait(false);
         }
 

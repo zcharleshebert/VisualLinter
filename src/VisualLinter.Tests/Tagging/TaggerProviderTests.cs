@@ -1,4 +1,5 @@
 ﻿using jwldnr.VisualLinter.Linting;
+using jwldnr.VisualLinter.Services;
 using jwldnr.VisualLinter.Tagging;
 using Microsoft.VisualStudio.Shell.TableManager;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -130,7 +131,7 @@ namespace jwldnr.VisualLinter.Tests.Tagging
 
             var visualLinterOptions = _mockOptions.Object;
 
-            var mockLinter = new Mock<ILinter>();
+            var mockLinter = new Mock<ILinterService>();
             var linter = mockLinter.Object;
 
             _provider = new TaggerProvider(
