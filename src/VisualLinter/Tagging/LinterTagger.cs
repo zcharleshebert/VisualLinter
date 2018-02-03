@@ -1,12 +1,13 @@
 ﻿using jwldnr.VisualLinter.Helpers;
 using jwldnr.VisualLinter.Linting;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace jwldnr.VisualLinter.Tagging
 {
@@ -135,7 +136,13 @@ namespace jwldnr.VisualLinter.Tagging
             _document.FileActionOccurred += OnFileActionOccurred;
             _buffer.ChangedLowPriority += OnBufferChange;
 
-            _provider.AddTagger(this, () => Analyze(FilePath));
+            _provider.AddTagger(this);
+
+            ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                await Analyze(FilePath).ConfigureAwait(false);
+            });
         }
 
         private void OnBufferChange(object sender, TextContentChangedEventArgs e)
