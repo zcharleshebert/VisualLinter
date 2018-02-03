@@ -153,7 +153,7 @@ namespace jwldnr.VisualLinter.Tagging
             }
         }
 
-        internal void AddTagger(LinterTagger tagger)
+        internal Task AddTagger(LinterTagger tagger, Func<Task> callback)
         {
             lock (_managers)
             {
@@ -162,6 +162,8 @@ namespace jwldnr.VisualLinter.Tagging
                 foreach (var manager in _managers)
                     manager.AddFactory(tagger.Factory);
             }
+
+            return callback();
         }
 
         internal async Task Analyze(string filePath, CancellationToken token)
