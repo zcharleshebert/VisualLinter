@@ -1,6 +1,5 @@
 ﻿using jwldnr.VisualLinter.Helpers;
 using jwldnr.VisualLinter.Tagging;
-using Microsoft.VisualStudio.Shell;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,7 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Task = System.Threading.Tasks.Task;
 
 namespace jwldnr.VisualLinter.Linting
 {
@@ -34,39 +32,43 @@ namespace jwldnr.VisualLinter.Linting
 
                 try
                 {
-                    await Task.Run(async () =>
+                    token.ThrowIfCancellationRequested();
+
+                    var directoryPath = Path.GetDirectoryName(filePath) ??
+                        throw new Exception($"exception: could not get directory for file {filePath}");
+
+                    var eslintPath = EslintHelper.GetEslintPath(directoryPath);
+                    var arguments = string.Join(" ", QuoteArgument(filePath), EslintHelper.GetArguments(directoryPath));
+
+                    var output = await RunAsync(eslintPath, arguments, token)
+                        .ConfigureAwait(false);
+
+                    token.ThrowIfCancellationRequested();
+
+                    if (string.IsNullOrEmpty(output))
+                        throw new Exception("exception: linter returned empty result");
+
+                    IEnumerable<EslintResult> results = new List<EslintResult>();
+
+                    try
                     {
-                        var directoryPath = Path.GetDirectoryName(filePath) ??
-                            throw new Exception($"exception: could not get directory for file {filePath}");
+                        results = JsonConvert.DeserializeObject<IEnumerable<EslintResult>>(output);
+                    }
+                    catch (Exception e)
+                    {
+                        OutputWindowHelper.WriteLine(
+                            "exception: error trying to deserialize output:" +
+                            Environment.NewLine +
+                            output);
 
-                        var eslintPath = EslintHelper.GetEslintPath(directoryPath);
-                        var arguments = string.Join(" ", QuoteArgument(filePath), EslintHelper.GetArguments(directoryPath));
+                        OutputWindowHelper.WriteLine(e.Message);
+                    }
 
-                        var output = await RunAsync(eslintPath, arguments, token)
-                            .ConfigureAwait(false);
+                    var messages = ProcessResults(results);
 
-                        if (string.IsNullOrEmpty(output))
-                            throw new Exception("exception: linter returned empty result");
+                    token.ThrowIfCancellationRequested();
 
-                        IEnumerable<EslintResult> results = new List<EslintResult>();
-
-                        try
-                        {
-                            results = JsonConvert.DeserializeObject<IEnumerable<EslintResult>>(output);
-                        }
-                        catch (Exception e)
-                        {
-                            OutputWindowHelper.WriteLine(
-                                "exception: error trying to deserialize output:" +
-                                Environment.NewLine +
-                                output);
-
-                            OutputWindowHelper.WriteLine(e.Message);
-                        }
-
-                        var messages = ProcessResults(results);
-                        provider.Accept(filePath, messages);
-                    }, token).ConfigureAwait(false);
+                    provider.Accept(filePath, messages);
                 }
                 catch (OperationCanceledException)
                 { }
@@ -145,6 +147,8 @@ namespace jwldnr.VisualLinter.Linting
 
                 try
                 {
+                    //token.ThrowIfCancellationRequested();
+
                     if (false == process.Start())
                         throw new Exception("exception: unable to start eslint process");
 
