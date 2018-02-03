@@ -48,22 +48,7 @@ namespace jwldnr.VisualLinter.Linting
                     if (string.IsNullOrEmpty(output))
                         throw new Exception("exception: linter returned empty result");
 
-                    IEnumerable<EslintResult> results = new List<EslintResult>();
-
-                    try
-                    {
-                        results = JsonConvert.DeserializeObject<IEnumerable<EslintResult>>(output);
-                    }
-                    catch (Exception e)
-                    {
-                        OutputWindowHelper.WriteLine(
-                            "exception: error trying to deserialize output:" +
-                            Environment.NewLine +
-                            output);
-
-                        OutputWindowHelper.WriteLine(e.Message);
-                    }
-
+                    var results = DeserializeOutput(output);
                     var messages = ProcessResults(results);
 
                     token.ThrowIfCancellationRequested();
@@ -87,6 +72,20 @@ namespace jwldnr.VisualLinter.Linting
             {
                 OutputWindowHelper.WriteLine(e.Message);
             }
+        }
+
+        private static IEnumerable<EslintResult> DeserializeOutput(string output)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<IEnumerable<EslintResult>>(output);
+            }
+            catch (Exception e)
+            {
+                OutputWindowHelper.WriteLine(e.Message);
+            }
+
+            throw new Exception($"exception: error trying to deserialize output: {output}");
         }
 
         private static IEnumerable<EslintMessage> ProcessMessages(IReadOnlyList<EslintMessage> messages)
